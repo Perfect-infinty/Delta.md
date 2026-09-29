@@ -1,0 +1,1898 @@
+/* ---------------------------------------------------------------- */
+/* Delta base styles + theme variables.                             */
+/* Themes are just CSS custom properties scoped to [data-theme].    */
+/* Plugins can add new themes at runtime via Delta.registerTheme(). */
+/* ---------------------------------------------------------------- */
+
+:root {
+--font: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+/* Nord theme: dark, cold blue-gray palette (arctic, north-bluish) */
+[data-theme='nord'] {
+  --bg: #2e3440;
+  --bg-elevated: #3b4252;
+  --bg-card: #3b4252;
+  --bg-hover: #434c5e;
+  --text: #eceff4;
+  --text-muted: #9aa8b8;
+  --border: #434c5e;
+  --accent: #88c0d0;
+  --accent-contrast: #2e3440;
+  --danger: #bf616a;
+}
+
+/* Violet Dark: dark gray + purple accent */
+[data-theme='violet-dark'] {
+  --bg: #1e1e1e;
+  --bg-elevated: #161616;
+  --bg-card: #262626;
+  --bg-hover: #2a2a2a;
+  --text: #dcddde;
+  --text-muted: #999999;
+  --border: #363636;
+  --accent: #7f6df2;
+  --accent-contrast: #ffffff;
+  --danger: #e93147;
+}
+
+/* Violet Light: the light counterpart, same purple accent on a clean white base */
+[data-theme='violet-light'] {
+  --bg: #ffffff;
+  --bg-elevated: #f6f6f7;
+  --bg-card: #ffffff;
+  --bg-hover: #efeff0;
+  --text: #2e2e2e;
+  --text-muted: #6c6f75;
+  --border: #e3e3e5;
+  --accent: #7c5cff;
+  --accent-contrast: #ffffff;
+  --danger: #d1373f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+}
+
+.app-root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty strip reserved for macOS's traffic-light buttons (hidden on
+   other platforms, where there's nothing to reserve room for). */
+.titlebar-spacer {
+  flex: none;
+  height: 0;
+  -webkit-app-region: drag;
+}
+
+[data-platform='darwin'] .titlebar-spacer {
+  height: 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* One per open tab (App.jsx) - all tabs stay mounted so switching tabs
+   never loses a screen's state; only the active tab's panel is shown. */
+.tab-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+/* ---------------- Tab bar ---------------- */
+.tab-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 6px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  -webkit-app-region: drag;
+}
+
+/* Deliberately *not* flex:1 - sized to its own tabs (scrolling once they
+   overflow) instead of stretching to fill the bar, so the "+" new-tab
+   button below lands right next to the last tab instead of stranded at
+   the far edge of whatever empty space happens to be left. */
+.tab-bar-scroll {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-bar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* The actual leftover space - still the window's drag region, just a
+   dedicated element now instead of being wherever tab-bar-scroll's
+   flex:1 happened to stop growing. */
+.tab-bar-spacer {
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.tab-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px;
+  height: 32px;
+  padding: 0 10px;
+  margin: 0 2px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.tab-item:hover {
+  background: var(--bg-hover);
+}
+
+.tab-item.active,
+.tab-item.active:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Drag-to-reorder feedback (see TabBar.jsx) - the dragged tab dims in
+   place (native drag-and-drop already shows its own ghost image under
+   the cursor), and whichever tab it's currently over gets a left-edge
+   accent marking where it'll land on drop. */
+.tab-item.dragging {
+  opacity: 0.4;
+}
+
+.tab-item.drag-over {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.tab-item-icon {
+  flex: none;
+  font-size: 15px !important;
+}
+
+.tab-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-item-close {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tab-item-close:hover {
+  background: var(--bg-hover);
+}
+
+.tab-bar-new {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: 2px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.tab-bar-new:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+/* Notes/Graph/Settings actions live in the tab bar itself (rather than a
+   separate per-screen header) so there's one toolbar instead of two
+   stacked ones, and these actions stay reachable no matter which tab is
+   active - not just while the Notes grid happens to be open. */
+.tab-bar-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+}
+
+/* ---------------- Context menu ---------------- */
+.context-menu {
+  position: fixed;
+  z-index: 2000;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.context-menu-item {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.context-menu-item:hover {
+  background: var(--bg-hover);
+}
+
+.context-menu-item-danger {
+  color: var(--danger);
+}
+
+/* ---------------- Top bar (shared) ---------------- */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  -webkit-app-region: drag;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-app-region: no-drag;
+}
+
+.app-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+}
+
+/* A vertical hairline used to separate groups of actions that sit next
+   to each other in the same bar (tab-bar-actions' "New note" pill from
+   Graph/Settings, and that whole group from the "new tab" button) so the
+   grouping reads at a glance instead of a row of same-weight icons. */
+.bar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 2px;
+  flex: none;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  flex: none;
+}
+
+.icon-btn svg {
+  font-size: 19px;
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+}
+
+/* Distinct from the tab bar's bare "+" (which always means "new tab") -
+   this is a labelled pill so "add a note" never reads as the same
+   action as opening another tab, even though both start with a plus. */
+/* Doubled-up selector (not just .btn-new-note) so this reliably wins
+   over .btn's own padding/gap further down the file regardless of
+   source order - two classes always outrank one at equal specificity. */
+.btn.btn-new-note {
+  height: 32px;
+  padding: 0 14px 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  gap: 6px;
+}
+
+.icon-btn-active {
+  color: var(--accent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-hover);
+}
+
+.btn:disabled,
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn:disabled:hover,
+.icon-btn:disabled:hover {
+  background: none;
+}
+
+/* ---------------- Vault select screen ---------------- */
+.vault-screen {
+  align-items: center;
+  justify-content: center;
+}
+
+.vault-card {
+  max-width: 420px;
+  text-align: center;
+  padding: 32px;
+}
+
+.vault-logo {
+  width: 88px;
+  height: 88px;
+  margin-bottom: 16px;
+}
+
+.vault-title {
+  font-size: 40px;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.vault-subtitle {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+}
+
+.vault-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+.vault-error {
+  color: var(--danger);
+  font-size: 13px;
+}
+
+/* ---------------- Notes list (Keep-style cards) ---------------- */
+/* Breadcrumb + new-note/new-folder row above the grid. */
+.notes-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 20px 0;
+}
+
+.notes-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.notes-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.notes-breadcrumb-sep {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.notes-breadcrumb-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.notes-breadcrumb-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.notes-breadcrumb-current {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.notes-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* The note editor's location breadcrumb, under its top bar - reuses the
+   notes-breadcrumb button/item styles, just laid out as its own strip. */
+.editor-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.editor-breadcrumb .notes-breadcrumb-btn {
+  font-size: 12px;
+  padding: 2px 5px;
+}
+
+.editor-breadcrumb-sep {
+  opacity: 0.5;
+}
+
+.editor-breadcrumb-note {
+  color: var(--text);
+  padding: 2px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The mini file-listing inside a FolderCard. */
+.folder-card-contents {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.folder-card-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.folder-card-item svg {
+  font-size: 14px;
+  flex: none;
+}
+
+.folder-card-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-card-more {
+  opacity: 0.7;
+}
+
+.notes-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* List view: same cards, laid out as compact full-width rows - the
+   excerpt/preview/folder-contents are hidden, title left, date right.
+   Everything else (click, drag, context menu) works identically. */
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notes-list .note-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+}
+
+.notes-list .note-card-header {
+  flex: 1;
+  min-width: 0;
+}
+
+.notes-list .note-card-excerpt,
+.notes-list .file-card-preview,
+.notes-list .folder-card-contents {
+  display: none;
+}
+
+.notes-list .note-card-date {
+  flex: none;
+  margin: 0;
+}
+
+.note-card {
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.note-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.note-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.note-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.note-card-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Pinned notes (see NoteCard's right-click menu) sort to the very top
+   of the grid regardless of mtime - this is just the visual cue that
+   one is pinned, not what does the actual sorting (see NotesList's
+   mergeEntries). */
+.note-card-pinned {
+  border-color: var(--accent);
+}
+
+.note-card-pin-icon {
+  flex: none;
+  margin-left: auto;
+  color: var(--accent);
+  font-size: 15px !important;
+  transform: rotate(35deg);
+}
+
+.note-card-excerpt {
+  position: relative;
+  color: var(--text-muted);
+  font-size: 13px;
+  flex: 1;
+  max-height: 96px;
+  overflow: hidden;
+  pointer-events: none; /* clicks always fall through to the card, never into a link */
+}
+
+.note-card-excerpt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  background: linear-gradient(to bottom, transparent, var(--bg-card));
+}
+
+.note-card-empty {
+  font-style: italic;
+}
+
+/* Compact typography for markdown rendered inside a note card - the
+   full-size editor preview styles are too large for a small card. */
+.note-card-excerpt .md-preview {
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.note-card-excerpt .md-preview > *:first-child {
+  margin-top: 0;
+}
+
+.note-card-excerpt .md-preview h1,
+.note-card-excerpt .md-preview h2,
+.note-card-excerpt .md-preview h3,
+.note-card-excerpt .md-preview h4 {
+  font-size: 13px;
+  margin: 4px 0;
+}
+
+.note-card-excerpt .md-preview p {
+  margin: 4px 0;
+}
+
+.note-card-excerpt .md-preview ul,
+.note-card-excerpt .md-preview ol {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+
+.note-card-excerpt .md-preview blockquote {
+  margin: 4px 0;
+  padding-left: 10px;
+}
+
+.note-card-excerpt .md-preview img,
+.note-card-excerpt .md-preview video {
+  display: block;
+  max-width: 100%;
+  max-height: 90px;
+  margin: 4px 0;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.note-card-excerpt .md-preview audio {
+  display: none;
+}
+
+.note-card-excerpt .md-preview table {
+  font-size: 12px;
+  border-collapse: collapse;
+  margin: 4px 0;
+}
+
+.note-card-excerpt .md-preview th,
+.note-card-excerpt .md-preview td {
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+}
+
+.note-card-excerpt .md-preview iframe,
+.note-card-excerpt .md-preview embed,
+.note-card-excerpt .md-preview object {
+  display: none;
+}
+
+.note-card-excerpt .md-preview pre {
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+
+.note-card-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* FileCard - a non-.md vault file shown in the same grid as notes. */
+.file-card-preview img,
+.file-card-preview video {
+  display: block;
+  max-width: 100%;
+  max-height: 90px;
+  margin: 0 0 4px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.file-card-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-muted);
+  font-family: var(--font);
+}
+
+/* A drop target overlay shown on the Notes grid / editor textarea while
+   an OS drag is in progress over them. */
+.drop-target-active {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+  background: var(--bg-hover);
+}
+
+.empty-state,
+.empty-hint {
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ---------------- Note editor ---------------- */
+.note-title-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  -webkit-app-region: no-drag; /* otherwise the top-bar's drag region eats the click */
+}
+
+/* ---------------- Find & replace bar ---------------- */
+.find-replace-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.find-replace-input {
+  width: 160px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
+.find-replace-input:focus {
+  border-color: var(--accent);
+}
+
+.find-replace-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 40px;
+  text-align: center;
+}
+
+.editor-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Wraps the raw-markdown textarea plus its find-highlight mirror layer
+   (see NoteEditor). Owns the layout role .md-textarea used to have
+   (flex sizing, split border, background) so the textarea itself can sit
+   transparently on top of the mirror. */
+.md-editor-pane {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.editor-body.split .md-editor-pane {
+  border-right: 1px solid var(--border);
+  width: 50%;
+  flex: none;
+}
+
+.md-textarea {
+  flex: 1;
+  position: relative; /* paints above the absolutely-positioned mirror */
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 20px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  background: transparent;
+  color: var(--text);
+}
+
+/* Find-match mirror behind the textarea: identical box, padding and
+   typography so its text occupies exactly the same pixels, pre-wrap +
+   break-word to match textarea soft-wrapping (same combination
+   getCaretCoordinates mirrors with). All text transparent - only the
+   <mark> backgrounds show through behind the real text above. */
+.md-textarea-highlights {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  padding: 20px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+  pointer-events: none;
+}
+
+/* No horizontal padding on marks here (unlike the preview's) - any
+   extra width would shift the mirrored text out of alignment with the
+   textarea's. Text inside stays transparent; only backgrounds paint. */
+.md-textarea-highlights .md-find-match {
+  padding: 0;
+  color: transparent;
+}
+
+.md-preview {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px;
+  line-height: 1.6;
+}
+
+.md-preview h1,
+.md-preview h2,
+.md-preview h3 {
+  margin-top: 0.6em;
+}
+
+.md-preview code {
+  background: var(--bg-hover);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+/* Click-to-edit (Live Preview): hovering a block hints that it's
+   editable, and the swapped-in textarea keeps the same flow/font so
+   the transition from rendered to raw markdown is as seamless as
+   editing a plain textarea, its font/line-height inherited to match. */
+.md-preview-editable {
+  /* Signals that the empty space below the last block (or the whole
+     area, on a blank note) is clickable too - see beginAppendNewBlock
+     in MarkdownPreview.jsx. */
+  cursor: text;
+}
+
+.md-preview-editable > * {
+  border-radius: 4px;
+  transition: background-color 0.1s ease;
+}
+
+.md-preview-editable > *:not(.wikiembed):hover {
+  background: var(--bg-hover);
+  cursor: text;
+}
+
+.md-preview-inline-editor {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-hover);
+  border: none;
+  outline: 1px dashed var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0;
+  resize: none;
+  overflow: hidden;
+}
+
+.md-preview-inline-editor-new {
+  margin-top: 8px;
+}
+
+/* Find-in-preview (Cmd/Ctrl+F) match highlights - see MarkdownPreview's
+   findHighlight effect. color-mix keeps them readable on every theme by
+   deriving from the theme's own accent instead of a fixed yellow. */
+.md-find-match {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.md-find-match-active {
+  background: color-mix(in srgb, var(--accent) 65%, transparent);
+  outline: 1px solid var(--accent);
+}
+
+.md-preview pre code {
+  display: block;
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.md-preview blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 0;
+  padding-left: 14px;
+  color: var(--text-muted);
+}
+
+.md-preview img,
+.md-preview video {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+/* Mermaid diagrams: mermaid.run() replaces the `pre.mermaid` placeholder
+   with an inline <svg>, but only once it's finished (there's a brief
+   moment where the raw diagram source is still visible as plain text). */
+.md-preview pre.mermaid {
+  background: none;
+  padding: 8px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+.md-preview pre.mermaid svg {
+  max-width: 100%;
+}
+
+.note-card-excerpt .md-preview pre.mermaid svg {
+  max-height: 90px;
+}
+
+.md-preview a:not(.wikilink) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+}
+
+.md-preview a:not(.wikilink):hover {
+  text-decoration-color: currentColor;
+}
+
+.md-preview a:not(.wikilink):visited {
+  color: var(--accent);
+}
+
+.md-preview table {
+  border-collapse: collapse;
+}
+
+.md-preview th,
+.md-preview td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+}
+
+/* ---------------- Wikilinks + embeds ([[Note]] / ![[Note]]) ---------------- */
+.wikilink {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.wikilink:hover {
+  opacity: 0.8;
+}
+
+.wikiembed {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  background: var(--bg-hover);
+}
+
+.wikiembed-header {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.wikiembed-header:hover {
+  color: var(--accent);
+}
+
+.wikiembed-body > *:first-child {
+  margin-top: 0;
+}
+
+.wikiembed-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.wikiembed-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  cursor: pointer;
+}
+
+.wikiembed-static {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+/* ---------------- [[ / ![[ autocomplete dropdown ---------------- */
+.wikilink-autocomplete {
+  position: fixed;
+  z-index: 500;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+}
+
+.wikilink-autocomplete-item {
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wikilink-autocomplete-item.active,
+.wikilink-autocomplete-item:hover {
+  background: var(--bg-hover);
+}
+
+/* ---------------- Command palette (Cmd/Ctrl+K) ---------------- */
+.command-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  z-index: 1000;
+}
+
+.command-palette {
+  width: 100%;
+  max-width: 520px;
+  max-height: 60vh;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.command-palette-input {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 16px;
+  outline: none;
+}
+
+/* In-app image/video/audio viewer, opened instead of handing off to the
+   OS's default app for file types Delta can already render itself. */
+.file-viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 6vw;
+  z-index: 1000;
+}
+
+.file-viewer {
+  max-width: 100%;
+  max-height: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.file-viewer-name {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-viewer-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: auto;
+}
+
+.file-viewer-body img,
+.file-viewer-body video {
+  max-width: 80vw;
+  max-height: 76vh;
+  border-radius: 4px;
+}
+
+.file-viewer-body audio {
+  width: 60vw;
+  max-width: 480px;
+}
+
+/* FileViewer as a full tab (screens/FileViewer.jsx) - the persistent
+   sibling of the modal above, now with in-place editing for text files,
+   a rendered iframe mode for html and a mammoth-rendered docx view. */
+.file-viewer-screen-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-viewer-screen-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: var(--bg);
+}
+
+.file-viewer-screen-body img,
+.file-viewer-screen-body video {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 4px;
+}
+
+/* The editable surface for txt/html/css/json/... - same typography as
+   the note editor's raw-markdown textarea, so editing any text file
+   feels like editing a note. Stretches to fill the tab (the centering
+   flex above is for media; these override it). */
+.file-viewer-screen-textarea {
+  align-self: stretch;
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 20px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  background: transparent;
+  color: var(--text);
+}
+
+.file-viewer-screen-frame {
+  align-self: stretch;
+  flex: 1;
+  border: none;
+  background: #fff; /* pages usually assume a white canvas */
+}
+
+/* Read-only text body (legacy .doc extraction). */
+.file-viewer-screen-pre {
+  align-self: flex-start;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--text);
+}
+
+.file-viewer-screen-doc {
+  align-self: flex-start;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.file-viewer-screen-doc img {
+  max-width: 100%;
+}
+
+.file-viewer-screen-doc table {
+  border-collapse: collapse;
+}
+
+.file-viewer-screen-doc td,
+.file-viewer-screen-doc th {
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+}
+
+/* PromptDialog + ConfirmDialog - in-app stand-ins for window.prompt()/
+   window.confirm(). Electron's BrowserWindow never implements prompt()
+   at all (calling it just silently resolves null), and while confirm()
+   does show a real native OS dialog, it's an unstyled system popup that
+   looks completely out of place next to the rest of the app - both are
+   replaced with these so every dialog in Delta looks like Delta.
+   Reuses the same dim backdrop treatment as the file viewer above, just
+   with a much smaller box. */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.dialog-box {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dialog-message {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.dialog-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.dialog-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.command-palette-results {
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.command-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.command-palette-item.active,
+.command-palette-item:hover {
+  background: var(--bg-hover);
+}
+
+.command-palette-tag {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.command-palette-empty {
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.search-result-item {
+  align-items: flex-start;
+}
+
+.search-result-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.search-result-title {
+  font-weight: 500;
+}
+
+.search-result-snippet {
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-result-snippet mark {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ---------------- Graph view ---------------- */
+.graph-body {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+.graph-canvas {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  display: block;
+}
+
+.graph-canvas:active {
+  cursor: grabbing;
+}
+
+/* Note pane opened beside the graph when a node is clicked. */
+.graph-note-pane {
+  flex: none;
+  width: 42%;
+  min-width: 320px;
+  max-width: 560px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Galaxy look: glowing, individually-colored nodes drifting over a
+   subtle star field (each node's color comes from hashing its title,
+   set as inline `color` so everything below just uses currentColor).
+   The canvas keeps the app theme's own background - only the nodes,
+   stars and edges are styled here. */
+.graph-star {
+  fill: var(--text-muted);
+  opacity: var(--star-opacity, 0.4);
+  pointer-events: none;
+  animation: graph-star-twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes graph-star-twinkle {
+  from {
+    opacity: calc(var(--star-opacity, 0.4) * 0.35);
+  }
+  to {
+    opacity: var(--star-opacity, 0.4);
+  }
+}
+
+.graph-edge {
+  stroke: var(--border);
+  stroke-width: 1.2;
+}
+
+.graph-node circle {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.graph-node text {
+  fill: var(--text);
+  font-size: 12px;
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  transition: opacity 0.25s ease;
+}
+
+/* Obsidian-style label fade: zoomed far out, titles would just be
+   overlapping noise over the galaxy - hide them until zoomed back in.
+   data-zoom is set from view.scale in GraphView. */
+.graph-canvas[data-zoom='far'] .graph-node text {
+  opacity: 0;
+}
+
+.graph-node:hover circle {
+  fill: var(--accent);
+  filter: brightness(1.15);
+}
+
+/* Even a hovered far-out node shows its label - glance identification
+   without having to zoom back in. */
+.graph-canvas[data-zoom='far'] .graph-node:hover text {
+  opacity: 1;
+}
+
+.graph-node-ghost circle {
+  fill: var(--bg-hover);
+  stroke: var(--text-muted);
+  stroke-dasharray: 3 2;
+}
+
+.graph-node-ghost text {
+  fill: var(--text-muted);
+  font-style: italic;
+}
+
+/* ---------------- Settings ---------------- */
+/* Horizontal tab strip splitting Settings into General/Plugins/Config. */
+.settings-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid transparent;
+}
+
+.settings-tab:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.settings-tab-active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+/* The Delta/ config-file listing on the Config files tab. */
+.config-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.config-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.config-file-item:hover {
+  background: var(--bg-hover);
+}
+
+.config-file-item svg {
+  color: var(--text-muted);
+  flex: none;
+}
+
+.config-file-path {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.config-file-size {
+  color: var(--text-muted);
+  font-size: 12px;
+  flex: none;
+}
+
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.settings-section h2 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.settings-section-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-spin {
+  animation: delta-icon-spin 0.8s linear infinite;
+}
+
+@keyframes delta-icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Declarative plugin settings fields (see PluginSettingsSection.jsx's
+   `fields` support) - one labelled row per field, same rhythm as a
+   plugin's custom render() content sitting above it in the same section. */
+.settings-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.settings-field-label {
+  color: var(--text);
+}
+
+.settings-field-input {
+  min-width: 120px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.settings-field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ---------------- Custom select (used for Theme, etc.) ---------------- */
+.custom-select {
+  position: relative;
+  display: inline-block;
+  min-width: 220px;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.custom-select-trigger:hover {
+  border-color: var(--accent);
+}
+
+.custom-select-arrow-open {
+  transform: rotate(180deg);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.custom-select-option:hover {
+  background: var(--bg-hover);
+}
+
+.custom-select-option.active {
+  color: var(--accent);
+}
+
+.settings-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.plugin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plugin-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.plugin-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Muted by default, red on hover - destructive, but not shouting. */
+.plugin-delete-btn {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.plugin-delete-btn:hover {
+  color: #e5484d;
+}
+
+.plugin-item input {
+  margin-top: 4px;
+}
+
+.plugin-name {
+  font-weight: 500;
+}
+
+.plugin-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.settings-note-changes {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------------- Toasts (plugin notices) ---------------- */
+.toast-stack {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.toast {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.toast-error {
+  border-color: var(--danger);
+  color: var(--danger);
+}

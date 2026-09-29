@@ -1,0 +1,7 @@
+{
+  "id": "example-word-count",
+  "name": "Word Count",
+  "version": "1.0.0",
+  "description": "Adds a toolbar button to the note editor that shows the word and character count of the current note.",
+  "main": "index.js"
+}

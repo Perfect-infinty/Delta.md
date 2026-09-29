@@ -1,0 +1,7 @@
+{
+  "id": "example-forest-theme",
+  "name": "Forest Theme",
+  "version": "1.0.0",
+  "description": "Adds a 'Forest' color theme (dark green background, mint accent) to Settings > Theme. An example of Delta.registerTheme().",
+  "main": "index.js"
+}

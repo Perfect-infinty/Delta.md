@@ -1,0 +1,75 @@
+{
+  "name": "delta",
+  "version": "0.1.0",
+  "description": "Delta - simple, fully hackable markdown vault note app",
+  "license": "MIT",
+  "keywords": [
+    "markdown",
+    "notes",
+    "notebook",
+    "electron",
+    "react",
+    "vite",
+    "plugins",
+    "obsidian-alternative"
+  ],
+  "private": true,
+  "main": "electron/main.js",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "concurrently -k -n VITE,ELECTRON -c blue,green \"npm:dev:vite\" \"npm:dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on tcp:5173 && cross-env NODE_ENV=development electron .",
+    "build": "vite build",
+    "start": "electron .",
+    "preview": "vite preview",
+    "dist": "vite build && electron-builder",
+    "dist:mac": "vite build && electron-builder --mac",
+    "dist:win": "vite build && electron-builder --win"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "dompurify": "^3.1.5",
+    "highlight.js": "^11.11.1",
+    "mammoth": "^1.12.0",
+    "markdown-it": "^14.1.0",
+    "mermaid": "^11.4.1",
+    "word-extractor": "^1.0.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^43.1.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^5.3.1",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.delta.notebook",
+    "productName": "Delta",
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "plugins/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.png"
+    }
+  }
+}

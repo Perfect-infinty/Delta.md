@@ -1,0 +1,7 @@
+{
+  "id": "example-quote-fetch",
+  "name": "Quote Fetch",
+  "version": "1.0.0",
+  "description": "Adds a toolbar button that fetches a random quote from the internet (via Delta.fetch) and inserts it at the cursor.",
+  "main": "index.js"
+}
