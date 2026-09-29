@@ -5,6 +5,23 @@ A simple, fully hackable markdown notebook. Electron + Vite + React (JavaScript,
 You pick a folder ("vault") on your machine, and every note is a plain `.md` file inside it -
 no database, no proprietary format.
 
+## Screenshots
+
+<p align="center">
+  <img src="images/screen-1.png" alt="Notes grid: every note in the vault as a card, with tabs and folder breadcrumbs" width="800">
+</p>
+<p align="center"><em>Notes grid - Keep-style cards, tabs, folders, graph view and settings one click away.</em></p>
+
+<p align="center">
+  <img src="images/screen-2.png" alt="Note editor in split view: markdown on the left, live preview on the right" width="800">
+</p>
+<p align="center"><em>Note editor - plain markdown with a live split preview (or full-screen preview).</em></p>
+
+<p align="center">
+  <img src="images/screen-3.png" alt="Settings, Plugins tab: enable, disable and delete plugins" width="800">
+</p>
+<p align="center"><em>Plugins - drop a folder in, hit refresh, toggle it on. No restart needed.</em></p>
+
 ## Screens
 
 1. **Vault select** - pick (or create) a folder to use as your vault.
