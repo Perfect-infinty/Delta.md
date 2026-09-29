@@ -101,7 +101,8 @@ pnpm dist        # packages installers with electron-builder (output: release/)
 
 Issues and pull requests are welcome. Delta is intentionally small and hackable - if your idea can be a
 plugin (see [`PLUGIN_API.md`](./PLUGIN_API.md)), that is usually the best place for it. For anything
-bigger, please open an issue first so we can talk it through.
+bigger, please open an issue first so we can talk it through. See [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+for setup, project layout and guidelines.
 
 ## Security note
 
